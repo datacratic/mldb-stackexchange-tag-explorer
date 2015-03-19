@@ -116,7 +116,7 @@ $(function () {
                 });
         }
 
-        var url = "/v1/datasets/" + datasetName + "_merged/select";
+        var url = "/v1/datasets/" + datasetName + "_merged/query";
         $.getJSON(url, function(data) {
             doIt(data);
         });
@@ -284,6 +284,11 @@ $(function () {
     function onDataLoaded(data, textStatus, jqXHR) {
         log("Data loaded successfully.");
         datasetName = data.return.datasetId;
+        if (datasetName === undefined) {
+            log("ERROR: The data loader failed to return the dataset name.");
+            return;
+        }
+        log("Dataset name: " + datasetName);
         logCount(data);
         $.ajax({
             url :"/v1/datasets/" + datasetName,

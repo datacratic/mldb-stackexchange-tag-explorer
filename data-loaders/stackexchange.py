@@ -72,7 +72,7 @@ while has_more:
         break
 dataset.commit()
 mldb.log("Fetched {} tags".format(count))
-mldb.set_return({
+mldb.script.set_return({
     'datasetId' : dataset_id,
     'count' : count,
     'quotaRemaining' : quota_remaining

@@ -11,16 +11,17 @@ from datetime import datetime
 
 
 if False:
-    # there to silence flake8 about plugin being undefined
+    # there to silence flake8 about mldb being undefined
     mldb = None
 
 mldb.log("Reddit data loader started")
 dataset_id = 'reddit_dataset'
 mldb.script.set_return({'dataset_id' : dataset_id})
 
+dataset_id = 'reddit_dataset'
 dataset_config = {
     'type'    : 'mutable',
-    'id'      : 'reddit_dataset',
+    'id'      : dataset_id,
     'address' : 'reddit_dataset.beh.gz'  # where to save the import
 }
 dataset = mldb.create_dataset(dataset_config)
@@ -45,7 +46,7 @@ for row in reddit:
     for k in row[1:]:
         if count == 0:
             mldb.log("Reddit data loader first line: {}, {}"
-                       .format(k, triplet))
+                     .format(k, triplet))
         dataset.record_row(k, triplet)
         if count == 0:
             mldb.log("Reddit data loader recorded first row")
@@ -59,3 +60,8 @@ for row in reddit:
 
 
 dataset.commit()
+
+mldb.script.set_return({
+    'datasetId' : dataset_id,
+    'count' : count
+})
