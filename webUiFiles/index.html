@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+  - index.html
+  - Mich, 2015-03-11
+  - Copyright (c) 2015 Datacratic Inc.  All rights reserved.
+  -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>MLDB T-SNE Generator</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <fieldset>
+            <legend>Input parameters</legend>
+            <form action="#">
+                <table>
+                <tr>
+                    <td><label>Method:</label></td>
+                    <td><select name="method">
+                            <option value="file">File</option>
+                            <option value="so">Stack Exchange</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="selectOption selectOption-file">
+                    <td><label>Import script URI:</label></td>
+                    <td><input type="text" name="importScriptUri" style="width: 500px;" value="file://examples/reddit/data_loader.py"/></td>
+                </tr>
+                <tr class="selectOption selectOption-so">
+                    <td><label>Stack Exchange site:</label></td>
+                    <td><select name="stackexchangeSite"></select></td>
+                </tr>
+                <tr class="selectOption selectOption-so">
+                    <td><label>Stack Exchange api key (optional):</label></td>
+                    <td><input name="stackexchangeKey" style="width: 500px;"/></td>
+                </tr>
+                <tr>
+                    <td><label>K-Means groups:</label></td>
+                    <td><input type="number" min=1 max=20 name="kMeansGroups" value=20></td>
+                </tr>
+                </table>
+                <button>Go!</button>
+            </form>
+        </fieldset>
+        <fieldset>
+            <legend>Progress</legend>
+            <textarea id="#progress" disabled rows=10 cols=80></textarea>
+        </fieldset>
+        <fieldset>
+            <legend>Result</legend>
+            <div id="result" style="position: relative;"></div>
+        </fieldset>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" src="script.js"></script>
+    </body>
+</html>
