@@ -10,16 +10,17 @@ from datetime import datetime
 
 if False:
     # silence pep8
-    plugin = None
+    mldb = None
 
-assert plugin.args['site'], plugin.log("args.site is undefined")
+plugin = mldb.plugin
+assert plugin.args['site'], mldb.log("args.site is undefined")
 page = 0
 has_more = True
 key = None
 if 'key' in plugin.args:
     key = plugin.args['key']
 site = plugin.args['site']
-plugin.log("Got site:" + site)
+mldb.log("Got site:" + site)
 dataset_id = site + '_dataset'
 
 dataset_config = {
@@ -27,8 +28,8 @@ dataset_config = {
     'id'      : dataset_id,
     'address' : site + '_dataset.beh.gz'
 }
-dataset = plugin.create_dataset(dataset_config)
-plugin.log("stackexchange data loader created dataset " + dataset_id)
+dataset = mldb.create_dataset(dataset_config)
+mldb.log("stackexchange data loader created dataset " + dataset_id)
 now = datetime.now()  # foo date, timeless features
 
 count = 0
@@ -45,7 +46,7 @@ while has_more:
         params['key'] = key
     r = requests.get('https://api.stackexchange.com/2.2/questions',
                      params=params)
-    assert r.status_code == 200, plugin.log("Failed to fetch questions: "
+    assert r.status_code == 200, mldb.log("Failed to fetch questions: "
                                             + r.content)
     result = json.loads(r.content)
     has_more = result['has_more']
@@ -56,22 +57,22 @@ while has_more:
         for tag in question['tags']:
             tag = tag.encode("utf-8")
             if count == 0:
-                plugin.log("stackexchange data loader first line: {}, {}"
+                mldb.log("stackexchange data loader first line: {}, {}"
                            .format(tag, triplet))
             dataset.recordRow(tag, triplet)
             if count == 0:
-                plugin.log("stackexchange data loader recorded first row")
+                mldb.log("stackexchange data loader recorded first row")
             count += 1
             if count == 20000:
-                plugin.log("stackexchange data loader stopping at 20k lines")
+                mldb.log("stackexchange data loader stopping at 20k lines")
                 has_more = False
                 break
         else:
             continue
         break
 dataset.commit()
-plugin.log("Fetched {} tags".format(count))
-plugin.set_return({
+mldb.log("Fetched {} tags".format(count))
+mldb.set_return({
     'datasetId' : dataset_id,
     'count' : count,
     'quotaRemaining' : quota_remaining
