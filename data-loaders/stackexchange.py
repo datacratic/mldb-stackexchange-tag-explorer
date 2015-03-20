@@ -12,14 +12,13 @@ if False:
     # silence pep8
     mldb = None
 
-plugin = mldb.plugin
-assert plugin.args['site'], mldb.log("args.site is undefined")
+assert mldb.script.args['site'], mldb.log("args.site is undefined")
 page = 0
 has_more = True
 key = None
-if 'key' in plugin.args:
-    key = plugin.args['key']
-site = plugin.args['site']
+if 'key' in mldb.script.args:
+    key = mldb.script.args['key']
+site = mldb.script.args['site']
 mldb.log("Got site:" + site)
 dataset_id = site + '_dataset'
 
