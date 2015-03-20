@@ -53,23 +53,25 @@ while has_more:
     quota_remaining = result['quota_remaining']
 
     for question in result['items']:
-        triplet = [[question['question_id'], '1', now]]
-        for tag in question['tags']:
-            tag = tag.encode("utf-8")
-            if count == 0:
-                mldb.log("stackexchange data loader first line: {}, {}"
-                           .format(tag, triplet))
-            dataset.recordRow(tag, triplet)
-            if count == 0:
-                mldb.log("stackexchange data loader recorded first row")
-            count += 1
-            if count == 20000:
-                mldb.log("stackexchange data loader stopping at 20k lines")
-                has_more = False
-                break
-        else:
-            continue
-        break
+        if len(question['tags']) > 1:
+            triplet = [[question['question_id'], '1', now]]
+            for tag in question['tags']:
+                tag = tag.encode("utf-8")
+                if count == 0:
+                    mldb.log("stackexchange data loader first line: {}, {}"
+                            .format(tag, triplet))
+                dataset.recordRow(tag, triplet)
+                if count == 0:
+                    mldb.log("stackexchange data loader recorded first row")
+                count += 1
+                if count == 20000:
+                    mldb.log("stackexchange data loader stopping at 20k lines")
+                    has_more = False
+                    break
+            else:
+                continue
+            break
+
 dataset.commit()
 mldb.log("Fetched {} tags".format(count))
 mldb.script.set_return({

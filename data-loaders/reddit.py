@@ -42,21 +42,22 @@ now = datetime.now()  # foo date, timeless features
 
 count = 0
 for row in reddit:
-    triplet = [[row[0], '1', now]]
-    for k in row[1:]:
-        if count == 0:
-            mldb.log("Reddit data loader first line: {}, {}"
-                     .format(k, triplet))
-        dataset.record_row(k, triplet)
-        if count == 0:
-            mldb.log("Reddit data loader recorded first row")
-        count += 1
-        if count == 20000:
-            mldb.log("Reddit data loader stopping at 20k lines")
-            break
-    else:
-        continue
-    break
+    if len(row > 2):
+        triplet = [[row[0], '1', now]]
+        for k in row[1:]:
+            if count == 0:
+                mldb.log("Reddit data loader first line: {}, {}"
+                        .format(k, triplet))
+            dataset.record_row(k, triplet)
+            if count == 0:
+                mldb.log("Reddit data loader recorded first row")
+            count += 1
+            if count == 20000:
+                mldb.log("Reddit data loader stopping at 20k lines")
+                break
+        else:
+            continue
+        break
 
 
 dataset.commit()
