@@ -42,7 +42,7 @@ now = datetime.now()  # foo date, timeless features
 
 count = 0
 for row in reddit:
-    if len(row > 2):
+    if len(row) > 2:
         triplet = [[row[0], '1', now]]
         for k in row[1:]:
             if count == 0:
