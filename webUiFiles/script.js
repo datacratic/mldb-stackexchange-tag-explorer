@@ -267,27 +267,28 @@ $(function () {
     }
 
     function logCount(data) {
-        if (data.return.count === undefined) {
+        if (data.count === undefined) {
             log("Unknown data points count.");
         }
         else {
-            log("Got " + data.return.count + " data points.");
+            log("Got " + data.count + " data points.");
         }
     }
 
     function logQuotaRemaining(data) {
-        if (data.return.quotaRemaining !== undefined) {
-            log("Quota remaining: " + data.return.quotaRemaining);
+        if (data.quotaRemaining !== undefined) {
+            log("Quota remaining: " + data.quotaRemaining);
         }
     }
 
     function onDataLoaded(data, textStatus, jqXHR) {
         log("Data loaded successfully.");
-        datasetName = data.return.datasetId;
+        datasetName = data.datasetId;
         if (datasetName === undefined) {
             log("ERROR: The data loader failed to return the dataset name.");
             return;
         }
+        logQuotaRemaining(data);
         log("Dataset name: " + datasetName);
         logCount(data);
         $.ajax({
@@ -303,13 +304,18 @@ $(function () {
         var option = $("select[name=method]").val();
         if (option == "file") {
             return {
-                address : $("input[name=importScriptUri]").val()
+                method : "POST",
+                url : "/v1/plugins/pyrunner/routes/run?sync=true",
+                data : {
+                    address : $("input[name=importScriptUri]").val()
+                }
             };
         }
         else if (option == "so") {
             return {
-                address : 'file://examples/stackexchange/data_loader.py',
-                args : {
+                method : "PUT",
+                url : '../run/stackexchange',
+                data : {
                     site : $("select[name=stackexchangeSite]").val(),
                     key : $("input[name=stackexchangeKey]").val()
                 }
@@ -322,13 +328,13 @@ $(function () {
         kMeansGroups = parseInt($("input[name=kMeansGroups]").val());
         e.preventDefault();
         setFormActiveState(false);
-        var data = getDataLoaderConfig();
+        var params = getDataLoaderConfig();
 
         log("Loading data.");
         $.ajax({
-            method : "POST",
-            url : "/v1/plugins/pyrunner/routes/run?sync=true",
-            data : JSON.stringify(data),
+            method : params.method,
+            url : params.url,
+            data : JSON.stringify(params.data),
             success : onDataLoaded,
             error : getAjaxOnError("Failed to import data.")
         });
