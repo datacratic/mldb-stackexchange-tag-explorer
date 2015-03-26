@@ -35,6 +35,7 @@ $(function () {
     }
 
     function displayResult() {
+        $("svg").remove();
         function getCol(name, cols) {
             for (var i in cols) {
                 if (cols[i][0] === name) {
@@ -116,34 +117,42 @@ $(function () {
                 });
         }
 
-        var url = "/v1/datasets/" + datasetName + "_merged/query";
+        var url = "/v1/datasets/" + datasetName + "_merged_" + kMeansGroups + "/query";
         $.getJSON(url, function(data) {
             doIt(data);
         });
     }
 
     function createMergedDataset() {
-        log("Creating merged dataset");
-        config = {
-            'type' : "merged",
-            'id' : datasetName + "_merged",
-            'params' : {
-                "datasets": [
-                    {"id": datasetName + "_tsne"},
-                    {"id": datasetName + "_kmeans"}
-                ]
-            }
-        };
+        var mergedDatasetId = datasetName + "_merged_" + kMeansGroups;
         $.ajax({
-            method : "POST",
-            url : "/v1/datasets?sync=true",
-            data : JSON.stringify(config),
-            error : getAjaxOnError("Failed to create merged dataset"),
-            success : function() {
-                log("Created merged dataset");
-                displayResult();
+            method : "GET",
+            url : "/v1/datasets/" + mergedDatasetId,
+            success : displayResult,
+            error : function() {
+                log("Creating merged dataset");
+                config = {
+                    'type' : "merged",
+                    'id' : mergedDatasetId,
+                    'params' : {
+                        "datasets": [
+                            {"id": datasetName + "_tsne"},
+                            {"id": datasetName + "_kmeans_" + kMeansGroups}
+                        ]
+                    }
+                };
+                $.ajax({
+                    method : "POST",
+                    url : "/v1/datasets?sync=true",
+                    data : JSON.stringify(config),
+                    error : getAjaxOnError("Failed to create merged dataset"),
+                    success : function() {
+                        log("Created merged dataset");
+                        displayResult();
+                    }
+                });
             }
-        })
+        });
     }
 
     function trainTsnePipeline() {
@@ -161,35 +170,43 @@ $(function () {
     }
 
     function createTsnePipeline() {
-        log("Creating tsne pipeline");
-        config = {
-            'type' : 'tsne',
-            'params' : {
-                'dataset' : {'id' : datasetName + '_svd_embedding'},
-                'output' : {'id' : datasetName + '_tsne',
-                            'type' : 'mutable',
-                            'address' : datasetName + 'reddit_tsne.beh.gz'},
-                'select' : 'svd*',
-                'where' : 'true'
-            }
-        };
+        var tsneId = datasetName + "_tsne";
         $.ajax({
-            method : "PUT",
-            url : "/v1/pipelines/" + datasetName + "_tsne?sync=true",
-            data : JSON.stringify(config),
-            error : getAjaxOnError("Failed to create tsne pipeline."),
-            success : function() {
-                log("Created tsne pipeline.");
-                trainTsnePipeline();
+            method : "GET",
+            url : "/v1/pipelines/" + tsneId,
+            success : createMergedDataset,
+            error : function () {
+                log("Creating tsne pipeline");
+                config = {
+                    'type' : 'tsne',
+                    'params' : {
+                        'dataset' : {'id' : datasetName + '_svd_embedding'},
+                        'output' : {'id' : tsneId,
+                                    'type' : 'mutable',
+                                    'address' : datasetName + 'reddit_tsne.beh.gz'},
+                        'select' : 'svd*',
+                        'where' : 'true'
+                    }
+                };
+                $.ajax({
+                    method : "PUT",
+                    url : "/v1/pipelines/" + tsneId + "?sync=true",
+                    data : JSON.stringify(config),
+                    error : getAjaxOnError("Failed to create tsne pipeline."),
+                    success : function() {
+                        log("Created tsne pipeline.");
+                        trainTsnePipeline();
+                    }
+                });
             }
-        })
+        });
     }
 
     function trainKmeansPipeline() {
         log("Training kmeans pipeline.");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + datasetName + "_kmeans/trainings/1?sync=true",
+            url : "/v1/pipelines/" + datasetName + '_kmeans_' + kMeansGroups + "/trainings/1?sync=true",
             data : "{}",
             error : getAjaxOnError("Failed to train kmeans pipeline"),
             success : function() {
@@ -200,29 +217,37 @@ $(function () {
     }
 
     function createKmeansPipeline() {
-        log("Creating kmeans pipeline");
-        config = {
-            'type' : 'kmeans',
-            'params' : {
-                'dataset' : {'id' : datasetName + '_svd_embedding'},
-                'output' : {'id' : datasetName + '_kmeans',
-                            'type' : 'mutable',
-                            'address' : datasetName + '_kmeans.beh.gz'},
-                'select' : 'svd*',
-                'where' : 'true',
-                'numClusters' : kMeansGroups
-            }
-        };
+        var kmeansId = datasetName + '_kmeans_' + kMeansGroups;
         $.ajax({
-            method : "PUT",
-            url : "/v1/pipelines/" + datasetName + "_kmeans?sync=true",
-            data : JSON.stringify(config),
-            error : getAjaxOnError("Failed to create kmeans pipeline."),
-            success : function() {
-                log("Created kmeans pipeline.");
-                trainKmeansPipeline();
+            method : "GET",
+            url : "/v1/pipelines/" + kmeansId,
+            success : createTsnePipeline,
+            error : function () {
+                log("Creating kmeans pipeline");
+                config = {
+                    'type' : 'kmeans',
+                    'params' : {
+                        'dataset' : {'id' : datasetName + '_svd_embedding'},
+                        'output' : {'id' : kmeansId,
+                                    'type' : 'mutable',
+                                    'address' : datasetName + '_kmeans.beh.gz'},
+                        'select' : 'svd*',
+                        'where' : 'true',
+                        'numClusters' : kMeansGroups
+                    }
+                };
+                $.ajax({
+                    method : "PUT",
+                    url : "/v1/pipelines/" + kmeansId + "?sync=true",
+                    data : JSON.stringify(config),
+                    error : getAjaxOnError("Failed to create kmeans pipeline."),
+                    success : function() {
+                        log("Created kmeans pipeline.");
+                        trainKmeansPipeline();
+                    }
+                });
             }
-        })
+        });
     }
 
     function trainSvdPipeline() {
@@ -240,30 +265,38 @@ $(function () {
     }
 
     function createSvdPipeline() {
-        log("Creating svd pipeline");
-        config = {
-            'type' : 'svd',
-            'params' : {
-                'dataset' : {'id' : datasetName},
-                'output' : {'id' : datasetName + '_svd',
-                            'type' : 'mutable',
-                            'address' : datasetName + '_svd.beh.gz'},
-                'rowOutput' : {"id": datasetName + "_svd_embedding",
-                            'type': "embedding",
-                            'address' : datasetName + "_svd.embedding.gz" },
-                'select' : '* EXCLUDING label'
-            }
-        };
+        var svdId = datasetName + '_svd';
         $.ajax({
-            method: "PUT",
-            url : "/v1/pipelines/" + datasetName + "_svd?sync=true",
-            data : JSON.stringify(config),
-            error : getAjaxOnError("Failed to create svd pipeline"),
-            success : function() {
-                log("Created svd pipeline.");
-                trainSvdPipeline();
+            method: "GET",
+            url : "/v1/pipelines/" + svdId,
+            success: createKmeansPipeline,
+            error: function () {
+                log("Creating svd pipeline");
+                config = {
+                    'type' : 'svd',
+                    'params' : {
+                        'dataset' : {'id' : datasetName},
+                        'output' : {'id' : svdId,
+                                    'type' : 'mutable',
+                                    'address' : datasetName + '_svd.beh.gz'},
+                        'rowOutput' : {"id": datasetName + "_svd_embedding",
+                                    'type': "embedding",
+                                    'address' : datasetName + "_svd.embedding.gz" },
+                        'select' : '* EXCLUDING label'
+                    }
+                };
+                $.ajax({
+                    method: "PUT",
+                    url : "/v1/pipelines/" + svdId + "?sync=true",
+                    data : JSON.stringify(config),
+                    error : getAjaxOnError("Failed to create svd pipeline"),
+                    success : function() {
+                        log("Created svd pipeline.");
+                        trainSvdPipeline();
+                    }
+                });
             }
-        })
+        });
     }
 
     function logCount(data) {

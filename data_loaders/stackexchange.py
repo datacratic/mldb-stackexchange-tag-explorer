@@ -26,10 +26,18 @@ def load_data(mldb, payload):
         'id'      : dataset_id,
         'address' : site + '_dataset.beh.gz'
     }
-    print "FMLHHHH"
-    print dataset_config
-    print "BORGGGG"
+    url = "/v1/datasets/" + dataset_id
+    result = mldb.perform("GET", url, [], {})
+    if result['responseCode'] == 200:
+        mldb.log("Dataset was already loaded")
+        return {
+            'datasetId' : dataset_id,
+            'count' : '?',
+            'quotaRemaining' : '?'
+        }
+
     dataset = mldb.create_dataset(dataset_config)
+
     mldb.log("stackexchange data loader created dataset " + dataset_id)
     now = datetime.now()  # foo date, timeless features
 
