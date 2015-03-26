@@ -16,28 +16,34 @@
             <form action="#">
                 <table>
                 <tr>
-                    <td><label>Method:</label></td>
+                    <td>Method:</td>
                     <td><select name="method">
-                            <option value="file">File</option>
+                            <option value="reddit">Reddit</option>
                             <option value="so">Stack Exchange</option>
+                            <option value="file">File</option>
                         </select>
                     </td>
                 </tr>
                 <tr class="selectOption selectOption-file">
-                    <td><label>Import script URI:</label></td>
-                    <td><input type="text" name="importScriptUri" style="width: 500px;" value="file://examples/reddit/data_loader.py"/></td>
+                    <td>Import script URI:</td>
+                    <td><input type="text" name="importScriptUri" style="width: 500px;" value=""/></td>
                 </tr>
                 <tr class="selectOption selectOption-so">
-                    <td><label>Stack Exchange site:</label></td>
+                    <td>Stack Exchange site:</td>
                     <td><select name="stackexchangeSite"></select></td>
                 </tr>
                 <tr class="selectOption selectOption-so">
-                    <td><label>Stack Exchange api key (optional):</label></td>
+                    <td>Stack Exchange api key (optional):</td>
                     <td><input name="stackexchangeKey" style="width: 500px;"/></td>
                 </tr>
                 <tr>
-                    <td><label>K-Means groups:</label></td>
-                    <td><input type="number" min=1 max=20 name="kMeansGroups" value=20></td>
+                    <td>K-Means groups:</td>
+                    <td><input type="number" min=1 max=20 name="kMeansGroups" value=20 /></td>
+                </tr>
+                <tr>
+                    <td>Dimensions:</td>
+                    <td><label>2<input type="radio" name="dimensions" value=2 checked="checked"/></label>
+                        <label>3<input type="radio" name="dimensions" value=3 /></label></td>
                 </tr>
                 </table>
                 <button>Go!</button>

@@ -12,7 +12,18 @@ from datetime import datetime
 
 def load_data(mldb, payload):
     mldb.log("Reddit data loader started")
+
     dataset_id = 'reddit_dataset'
+    url = "/v1/datasets/" + dataset_id
+    result = mldb.perform("GET", url, [], {})
+    if result['responseCode'] == 200:
+        mldb.log("Dataset was already loaded")
+        return {
+            'datasetId' : dataset_id,
+            'count' : '?',
+            'quotaRemaining' : '?'
+        }
+
     dataset_config = {
         'type'    : 'mutable',
         'id'      : dataset_id,

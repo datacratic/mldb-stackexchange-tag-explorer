@@ -7,6 +7,7 @@
 $(function () {
     var datasetName = null;
     var kMeansGroups = null;
+    var dimensions = null;
     logTa = $("textarea");
     function log(msg) {
         logTa.append(msg + "\n").scrollTop(logTa[0].scrollHeight);
@@ -22,6 +23,18 @@ $(function () {
 
     function setFormActiveState(bool) {
         $(this).find("input, button, select").prop("disabled", !bool);
+    }
+
+    function getTsneId() {
+        return datasetName + "_tsne_" + dimensions;
+    }
+
+    function getKmeansId() {
+        return datasetName + "_kmeans_" + kMeansGroups;
+    }
+
+    function getMergedDatasetId() {
+        return datasetName + "_merged_" + kMeansGroups + "_" + dimensions;
     }
 
     function getAjaxOnError(msg) {
@@ -117,14 +130,14 @@ $(function () {
                 });
         }
 
-        var url = "/v1/datasets/" + datasetName + "_merged_" + kMeansGroups + "/query";
+        var url = "/v1/datasets/" + getMergedDatasetId() + "/query";
         $.getJSON(url, function(data) {
             doIt(data);
         });
     }
 
     function createMergedDataset() {
-        var mergedDatasetId = datasetName + "_merged_" + kMeansGroups;
+        var mergedDatasetId = getMergedDatasetId();
         $.ajax({
             method : "GET",
             url : "/v1/datasets/" + mergedDatasetId,
@@ -136,8 +149,8 @@ $(function () {
                     'id' : mergedDatasetId,
                     'params' : {
                         "datasets": [
-                            {"id": datasetName + "_tsne"},
-                            {"id": datasetName + "_kmeans_" + kMeansGroups}
+                            {"id": getTsneId()},
+                            {"id": getKmeansId()}
                         ]
                     }
                 };
@@ -159,7 +172,7 @@ $(function () {
         log("Training tsne pipeline");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + datasetName + "_tsne/trainings/1?sync=true",
+            url : "/v1/pipelines/" + getTsneId() + "/trainings/1?sync=true",
             data : "{}",
             error : getAjaxOnError("Failed to train tsne pipeline"),
             success : function() {
@@ -170,7 +183,7 @@ $(function () {
     }
 
     function createTsnePipeline() {
-        var tsneId = datasetName + "_tsne";
+        var tsneId = getTsneId();
         $.ajax({
             method : "GET",
             url : "/v1/pipelines/" + tsneId,
@@ -185,7 +198,8 @@ $(function () {
                                     'type' : 'mutable',
                                     'address' : datasetName + 'reddit_tsne.beh.gz'},
                         'select' : 'svd*',
-                        'where' : 'true'
+                        'where' : 'true',
+                        'numOutputDimensions' : dimensions
                     }
                 };
                 $.ajax({
@@ -206,7 +220,7 @@ $(function () {
         log("Training kmeans pipeline.");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + datasetName + '_kmeans_' + kMeansGroups + "/trainings/1?sync=true",
+            url : "/v1/pipelines/" + getKmeansId() + "/trainings/1?sync=true",
             data : "{}",
             error : getAjaxOnError("Failed to train kmeans pipeline"),
             success : function() {
@@ -217,7 +231,7 @@ $(function () {
     }
 
     function createKmeansPipeline() {
-        var kmeansId = datasetName + '_kmeans_' + kMeansGroups;
+        var kmeansId = getKmeansId();
         $.ajax({
             method : "GET",
             url : "/v1/pipelines/" + kmeansId,
@@ -354,11 +368,18 @@ $(function () {
                 }
             };
         }
+        else if (option == "reddit") {
+            return {
+                method : "PUT",
+                url : '../run/reddit'
+            };
+        }
         throw("Unknown option");
     }
 
     $("form").submit(function(e) {
         kMeansGroups = parseInt($("input[name=kMeansGroups]").val());
+        dimensions = parseInt($("input[name=dimensions]:checked").val());
         e.preventDefault();
         setFormActiveState(false);
         var params = getDataLoaderConfig();
