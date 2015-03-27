@@ -8,6 +8,8 @@ $(function () {
     var datasetName = null;
     var kMeansGroups = null;
     var dimensions = null;
+    var perplexity = 20;
+
     logTa = $("textarea");
     function log(msg) {
         logTa.append(msg + "\n").scrollTop(logTa[0].scrollHeight);
@@ -26,7 +28,7 @@ $(function () {
     }
 
     function getTsneId() {
-        return datasetName + "_tsne_" + dimensions;
+        return datasetName + "_tsne_" + dimensions + "_" + perplexity;
     }
 
     function getKmeansId() {
@@ -34,7 +36,8 @@ $(function () {
     }
 
     function getMergedDatasetId() {
-        return datasetName + "_merged_" + kMeansGroups + "_" + dimensions;
+        return datasetName + "_merged_" + kMeansGroups + "_" + dimensions + "_"
+            + perplexity;
     }
 
     function getAjaxOnError(msg) {
@@ -256,7 +259,8 @@ $(function () {
                                     'address' : datasetName + 'reddit_tsne.beh.gz'},
                         'select' : 'svd*',
                         'where' : 'true',
-                        'numOutputDimensions' : dimensions
+                        'numOutputDimensions' : dimensions,
+                        'perplexity' : perplexity
                     }
                 };
                 $.ajax({
@@ -438,6 +442,7 @@ $(function () {
         clearDisplayedResult();
         kMeansGroups = parseInt($("input[name=kMeansGroups]").val());
         dimensions = parseInt($("input[name=dimensions]:checked").val());
+        perplexity = parseInt($("input[name=perplexity]").val());
         e.preventDefault();
         setFormActiveState(false);
         var params = getDataLoaderConfig();
