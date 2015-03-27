@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  - index.html
+  - full.html
   - Mich, 2015-03-11
   - Copyright (c) 2015 Datacratic Inc.  All rights reserved.
   -->
@@ -15,19 +15,25 @@
             <legend>Input parameters</legend>
             <form action="#">
                 <table>
-                <tr style="display: none;">
+                <tr>
                     <td>Method:</td>
                     <td><select name="method">
-                            <option value="so" selected>Stack Exchange</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="so">Stack Exchange</option>
+                            <option value="file">File</option>
                         </select>
                     </td>
                 </tr>
+                <tr class="selectOption selectOption-file">
+                    <td>Import script URI:</td>
+                    <td><input type="text" name="importScriptUri" style="width: 500px;" value=""/></td>
+                </tr>
                 <tr class="selectOption selectOption-so">
-                    <td>Site:</td>
+                    <td>Stack Exchange site:</td>
                     <td><select name="stackexchangeSite"></select></td>
                 </tr>
                 <tr class="selectOption selectOption-so">
-                    <td>Api key (optional):</td>
+                    <td>Stack Exchange api key (optional):</td>
                     <td><input name="stackexchangeKey" style="width: 500px;"/></td>
                 </tr>
                 <tr>
