@@ -43,6 +43,7 @@ $(function () {
             log(msg + " Check console for more info.");
             console.log(jqXHR);
             console.log(textStatus);
+            console.log(jqXHR.responseText);
             throw errorThrown;
         }
     }
@@ -228,7 +229,7 @@ $(function () {
         log("Training tsne pipeline");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + getTsneId() + "/trainings/1?sync=true",
+            url : "/v1/pipelines/" + getTsneId() + "/runs/1?sync=true",
             data : "{}",
             error : getAjaxOnError("Failed to train tsne pipeline"),
             success : function() {
@@ -276,7 +277,7 @@ $(function () {
         log("Training kmeans pipeline.");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + getKmeansId() + "/trainings/1?sync=true",
+            url : "/v1/pipelines/" + getKmeansId() + "/runs/1?sync=true",
             data : "{}",
             error : getAjaxOnError("Failed to train kmeans pipeline"),
             success : function() {
@@ -324,7 +325,7 @@ $(function () {
         log("Training svd pipeline.");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + datasetName + "_svd/trainings/1?sync=true",
+            url : "/v1/pipelines/" + datasetName + "_svd/runs/1?sync=true",
             data : "{}",
             error : getAjaxOnError("Failed to train svd pipeline."),
             success : function() {
