@@ -47,15 +47,71 @@ $(function () {
         }
     }
 
+    function clearDisplayedResult() {
+        $("#result").html("");
+    }
+
     function displayResult() {
-        $("svg").remove();
-        function getCol(name, cols) {
-            for (var i in cols) {
-                if (cols[i][0] === name) {
-                    return cols[i];
-                }
+        if (dimensions == 2) {
+            display2dResults();
+        }
+        else if (dimensions == 3) {
+            display3dResults();
+        }
+        else {
+            throw("Unknown dimensions: " + dimensions);
+        }
+    }
+
+    function getCol(name, cols) {
+        for (var i in cols) {
+            if (cols[i][0] === name) {
+                return cols[i];
             }
         }
+    }
+
+    function display3dResults() {
+        //data:text/html,
+        var url = "/v1/datasets/" + getMergedDatasetId() + "/query";
+        $.getJSON(url, function(rawData) {
+            var points = [];
+            for (var i in rawData) {
+                var item = rawData[i].columns;
+                points.push({
+                    x : getCol("x", item)[1],
+                    y : getCol("y", item)[1],
+                    z : getCol("z", item)[1],
+                    cid : getCol("cluster", item)[1]
+                })
+            }
+            $.get("data_projector.html", function(htmlStr) {
+                var index = htmlStr.lastIndexOf("</head>");
+                var block2 = htmlStr.substr(index);
+                var block1 = htmlStr.substr(0, index);
+                index = block2.lastIndexOf("</body>");
+                var block3 = block2.substr(index);
+                var block2 = block2.substr(0, index);
+                var path = location.toString();
+                path = path.substr(0, path.lastIndexOf("/") + 1);
+                htmlStr = block1
+                    + '<link rel="stylesheet" type="text/css" href="' + path + 'DataProjector.css">'
+                    + block2
+                    + '<script type="text/javascript" src="' + path + 'TrackballControls.js"></script>'
+                    + '<script type="text/javascript" src="' + path + 'DataProjector.js"></script>'
+                    + '<script type="text/javascript">\n'
+                    + '$(function() {\n'
+                    + '    new DataProjector({points : ' + JSON.stringify(points) + '});\n'
+                    + '});\n'
+                    + '</script>'
+                    + block3;
+                $("#result").html('<iframe style="width: 100%; height: 800px;" src="data:text/html,' + encodeURIComponent(htmlStr) + '"></iframe>')
+            });
+        });
+    }
+
+    function display2dResults() {
+        $("svg").remove();
 
         function getMinMax(data) {
             var min = 0;
@@ -378,6 +434,7 @@ $(function () {
     }
 
     $("form").submit(function(e) {
+        clearDisplayedResult();
         kMeansGroups = parseInt($("input[name=kMeansGroups]").val());
         dimensions = parseInt($("input[name=dimensions]:checked").val());
         e.preventDefault();
