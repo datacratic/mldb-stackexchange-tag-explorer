@@ -14,14 +14,6 @@ $(function () {
     function log(msg) {
         logTa.append(msg + "\n").scrollTop(logTa[0].scrollHeight);
     }
-    // activate python runner plugin, should it be needed
-    $.ajax({
-        method : "PUT",
-        url : "/v1/plugins/pyrunner?sync=true",
-        data : JSON.stringify({"type" : "python_runner"}),
-        success : function() { log("Registered python plugin."); },
-        error : function() { log("Python plugin likely already registered."); }
-    });
 
     function setFormActiveState(bool) {
         $(this).find("input, button, select").prop("disabled", !bool);
