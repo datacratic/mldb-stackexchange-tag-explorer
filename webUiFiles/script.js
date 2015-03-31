@@ -405,7 +405,7 @@ $(function () {
         if (option == "file") {
             return {
                 method : "POST",
-                url : "/v1/plugins/pyrunner/routes/run?sync=true",
+                url : "/v1/types/plugins/python/routes/run?sync=true",
                 data : {
                     address : $("input[name=importScriptUri]").val()
                 }
