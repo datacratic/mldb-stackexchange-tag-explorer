@@ -208,7 +208,7 @@ $(function () {
                 };
                 $.ajax({
                     method : "POST",
-                    url : "/v1/datasets?sync=true",
+                    url : "/v1/datasets",
                     data : JSON.stringify(config),
                     error : getAjaxOnError("Failed to create merged dataset"),
                     success : function() {
@@ -224,7 +224,7 @@ $(function () {
         log("Training tsne pipeline");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + getTsneId() + "/runs/1?sync=true",
+            url : "/v1/pipelines/" + getTsneId() + "/runs/1",
             data : "{}",
             error : getAjaxOnError("Failed to train tsne pipeline"),
             success : function() {
@@ -257,7 +257,7 @@ $(function () {
                 };
                 $.ajax({
                     method : "PUT",
-                    url : "/v1/pipelines/" + tsneId + "?sync=true",
+                    url : "/v1/pipelines/" + tsneId,
                     data : JSON.stringify(config),
                     error : getAjaxOnError("Failed to create tsne pipeline."),
                     success : function() {
@@ -273,7 +273,7 @@ $(function () {
         log("Training kmeans pipeline.");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + getKmeansId() + "/runs/1?sync=true",
+            url : "/v1/pipelines/" + getKmeansId() + "/runs/1",
             data : "{}",
             error : getAjaxOnError("Failed to train kmeans pipeline"),
             success : function() {
@@ -305,7 +305,7 @@ $(function () {
                 };
                 $.ajax({
                     method : "PUT",
-                    url : "/v1/pipelines/" + kmeansId + "?sync=true",
+                    url : "/v1/pipelines/" + kmeansId,
                     data : JSON.stringify(config),
                     error : getAjaxOnError("Failed to create kmeans pipeline."),
                     success : function() {
@@ -321,7 +321,7 @@ $(function () {
         log("Training svd pipeline.");
         $.ajax({
             method : "PUT",
-            url : "/v1/pipelines/" + datasetName + "_svd/runs/1?sync=true",
+            url : "/v1/pipelines/" + datasetName + "_svd/runs/1",
             data : "{}",
             error : getAjaxOnError("Failed to train svd pipeline."),
             success : function() {
@@ -354,7 +354,7 @@ $(function () {
                 };
                 $.ajax({
                     method: "PUT",
-                    url : "/v1/pipelines/" + svdId + "?sync=true",
+                    url : "/v1/pipelines/" + svdId,
                     data : JSON.stringify(config),
                     error : getAjaxOnError("Failed to create svd pipeline"),
                     success : function() {
@@ -405,7 +405,7 @@ $(function () {
         if (option == "file") {
             return {
                 method : "POST",
-                url : "/v1/types/plugins/python/routes/run?sync=true",
+                url : "/v1/types/plugins/python/routes/run",
                 data : {
                     address : $("input[name=importScriptUri]").val()
                 }
