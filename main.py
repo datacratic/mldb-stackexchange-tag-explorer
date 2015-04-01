@@ -22,3 +22,4 @@ def request_handler(mldb, remaining, verb, resource, rest_params, payload,
         return load_data(mldb, payload)
 
 mldb.plugin.set_request_handler(request_handler)
+mldb.plugin.serve_documentation_folder('doc')
