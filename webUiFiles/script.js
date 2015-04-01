@@ -349,7 +349,7 @@ $(function () {
                         'rowOutput' : {"id": datasetName + "_svd_embedding",
                                     'type': "embedding",
                                     'address' : datasetName + "_svd.embedding.gz" },
-                        'select' : '* EXCLUDING label'
+                        'select' : '* EXCLUDING (label)'
                     }
                 };
                 $.ajax({
