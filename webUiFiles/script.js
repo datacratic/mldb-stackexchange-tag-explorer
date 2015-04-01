@@ -35,10 +35,10 @@ $(function () {
     function getAjaxOnError(msg) {
         return function ajaxOnError(jqXHR, textStatus, errorThrown) {
             setFormActiveState(true);
-            log(msg + " Check console for more info.");
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(jqXHR.responseText);
+            log(msg);
+            log(jqXHR.responseText);
+            log(textStatus);
+            log(errorThrown.toString());
             throw errorThrown;
         }
     }
