@@ -247,8 +247,7 @@ $(function () {
                     'params' : {
                         'dataset' : {'id' : datasetName + '_svd_embedding'},
                         'output' : {'id' : tsneId,
-                                    'type' : 'mutable',
-                                    'address' : datasetName + 'reddit_tsne.beh.gz'},
+                                    'type' : 'embedding'},
                         'select' : 'svd*',
                         'where' : 'true',
                         'numOutputDimensions' : dimensions,
@@ -296,8 +295,7 @@ $(function () {
                     'params' : {
                         'dataset' : {'id' : datasetName + '_svd_embedding'},
                         'output' : {'id' : kmeansId,
-                                    'type' : 'mutable',
-                                    'address' : datasetName + '_kmeans.beh.gz'},
+                                    'type' : 'embedding'},
                         'select' : 'svd*',
                         'where' : 'true',
                         'numClusters' : kMeansGroups
@@ -344,11 +342,9 @@ $(function () {
                     'params' : {
                         'dataset' : {'id' : datasetName},
                         'output' : {'id' : svdId,
-                                    'type' : 'mutable',
-                                    'address' : datasetName + '_svd.beh.gz'},
+                                    'type' : 'embedding'},
                         'rowOutput' : {"id": datasetName + "_svd_embedding",
-                                    'type': "embedding",
-                                    'address' : datasetName + "_svd.embedding.gz" },
+                                    'type': "embedding"},
                         'select' : '* EXCLUDING (label)'
                     }
                 };
