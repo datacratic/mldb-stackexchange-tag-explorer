@@ -24,7 +24,7 @@ def load_data(mldb, payload):
     dataset_config = {
         'type'    : 'mutable',
         'id'      : dataset_id,
-        'address' : site + '_dataset.beh.gz'
+        'params': { 'artifactUri' : site + '_dataset.beh.gz' }
     }
     url = "/v1/datasets/" + dataset_id
     result = mldb.perform("GET", url, [], {})
