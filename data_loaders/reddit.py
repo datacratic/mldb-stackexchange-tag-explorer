@@ -27,7 +27,7 @@ def load_data(mldb, payload):
     dataset_config = {
         'type'    : 'mutable',
         'id'      : dataset_id,
-        'address' : 'reddit_dataset.beh.gz'  # where to save the import
+        'params': {'artifactUri' : 'reddit_dataset.beh.gz'}  # where to save the import
     }
     dataset = mldb.create_dataset(dataset_config)
     mldb.log("Reddit data loader created dataset")
